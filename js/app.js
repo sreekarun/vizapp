@@ -182,18 +182,9 @@
             var yearScale = d3.scale.linear()
                 .domain([1800, 2009])
                 .range([box.x + 10, box.x + box.width - 10])
-                .clamp(true);
+                .clamp(true),
 
-            // Cancel the current transition, if any.
-            svg.transition().duration(0);
-
-            overlay
-                .on("mouseover", mouseover)
-                .on("mouseout", mouseout)
-                .on("mousemove", mousemove)
-                .on("touchmove", mousemove);
-
-            var mouseover = function() {
+            mouseover = function() {
                 label.classed("active", true);
             },
 
@@ -204,6 +195,14 @@
             mousemove = function () {
                 displayYear(yearScale.invert(d3.mouse(this)[0]));
             }
+            // Cancel the current transition, if any.
+            svg.transition().duration(0);
+
+            overlay
+                .on("mouseover", mouseover)
+                .on("mouseout", mouseout)
+                .on("mousemove", mousemove)
+                .on("touchmove", mousemove);
         }
 
         // Tweens the entire chart by first tweening the year, and then the data.
