@@ -15,8 +15,8 @@
 
 // 
 (function(window, $, d3, undefined){
-	//Namespace
-	var VIZ = window.VIZ || {},
+    //Namespace
+    var VIZ = window.VIZ || {},
         constants = {
             url: 'data/nations.json',
             xlabel: "income per capita, inflation-adjusted (dollars)",
@@ -25,44 +25,44 @@
     VIZ.constants(constants);
 
     // Todo - Delete after creating separate utility js file
-	/*VIZ.constants = function(constant){
-		var map = {
-			url: 'data/nations.json',
+    /*VIZ.constants = function(constant){
+        var map = {
+            url: 'data/nations.json',
             xlabel: "income per capita, inflation-adjusted (dollars)",
             ylabel: "life expectancy (years)"
-		};
+        };
 
-		return map[constant];
-	};*/
+        return map[constant];
+    };*/
 
-	VIZ.events = (function(){
-		function init(){
+    VIZ.events = (function(){
+        function init(){
 
-		}
-		init();
+        }
+        init();
 
-		return {
-		};
-	})();
+        return {
+        };
+    })();
 
-	// 
-	VIZ.Model = function(){
+    // 
+    VIZ.Model = function(){
 
-	};
+    };
 
-	VIZ.Model.prototype = {
-		/* type : getData  
-		*	returns a promise 
-		*/
-		getData: function(){
+    VIZ.Model.prototype = {
+        /* type : getData  
+        *   returns a promise 
+        */
+        getData: function(){
             var that = this;
-			var url = VIZ.constants('url');
+            var url = VIZ.constants('url');
             var promise = $.getJSON(url);
             promise.done(function(data){
                 that.model = data;
             });
-			return promise;
-		},
+            return promise;
+        },
         interpolateData : function(){
 
 
@@ -73,11 +73,11 @@
         interpolateValues : function(){
 
         }
-	};
+    };
 
 
-	// Chart view
-	VIZ.ChartView = function(nations){
+    // Chart view
+    VIZ.ChartView = function(nations){
         // Chart dimensions.
         var margin  = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
             width   = 960 - margin.right,
@@ -91,7 +91,7 @@
             key     = function(d) { return d.name; },
 
 
-    		// Various scales. These domains make assumptions of data, naturally.
+            // Various scales. These domains make assumptions of data, naturally.
             xScale      = d3.scale.log().domain([300, 1e5]).range([0, width]),
             yScale      = d3.scale.linear().domain([10, 85]).range([height, 0]),
             radiusScale = d3.scale.sqrt().domain([0, 5e8]).range([0, 40]),
@@ -246,7 +246,7 @@
             return a[1];
         }
 
-	};
+    };
 
     //APP Start
     var appModel = new VIZ.Model();
