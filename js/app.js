@@ -90,7 +90,7 @@
         var svg = d3.select("#chart").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-          .append("g")
+            .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         // Add the x-axis.
@@ -193,16 +193,16 @@
                 .on("mousemove", mousemove)
                 .on("touchmove", mousemove);
 
-            function mouseover() {
-              label.classed("active", true);
-            }
+            var mouseover = function() {
+                label.classed("active", true);
+            },
 
-            function mouseout() {
-              label.classed("active", false);
-            }
+            mouseout = function () {
+                label.classed("active", false);
+            },
 
-            function mousemove() {
-              displayYear(yearScale.invert(d3.mouse(this)[0]));
+            mousemove = function () {
+                displayYear(yearScale.invert(d3.mouse(this)[0]));
             }
         }
 
