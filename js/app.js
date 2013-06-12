@@ -3,13 +3,12 @@
 (function(window, namespace, undefined){
     window[namespace] = window[namespace] || {};
     window[namespace].constants = function (argument) {
-        var map = {
-            url: 'data/nations.json',
-            xlabel: "income per capita, inflation-adjusted (dollars)",
-            ylabel: "life expectancy (years)"
-        };
+        this.map = this.map || {};
+        if(typeof argument==="object") {
+            $.extend(this.map,argument);
+        }
 
-        return map[argument];
+        return this.map[argument];
     }
     window.namespace = window[namespace];
 })(window, "VIZ");
@@ -17,7 +16,13 @@
 // 
 (function(window, $, d3, undefined){
 	//Namespace
-	var VIZ = window.VIZ || {};
+	var VIZ = window.VIZ || {},
+        constants = {
+            url: 'data/nations.json',
+            xlabel: "income per capita, inflation-adjusted (dollars)",
+            ylabel: "life expectancy (years)"
+        };
+    VIZ.constants(constants);
 
     // Todo - Delete after creating separate utility js file
 	/*VIZ.constants = function(constant){
