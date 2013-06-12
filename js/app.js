@@ -1,8 +1,26 @@
+// Todo - move to separate file after consulting with sree
+// Utility function
+(function(window, namespace, undefined){
+    window[namespace] = window[namespace] || {};
+    window[namespace].constants = function (argument) {
+        var map = {
+            url: 'data/nations.json',
+            xlabel: "income per capita, inflation-adjusted (dollars)",
+            ylabel: "life expectancy (years)"
+        };
+
+        return map[argument];
+    }
+    window.namespace = window[namespace];
+})(window, "VIZ");
+
+// 
 (function(window, $, d3, undefined){
 	//Namespace
-	var VIZ = {};
+	var VIZ = window.VIZ || {};
 
-	VIZ.constants = function(constant){
+    // Todo - Delete after creating separate utility js file
+	/*VIZ.constants = function(constant){
 		var map = {
 			url: 'data/nations.json',
             xlabel: "income per capita, inflation-adjusted (dollars)",
@@ -10,7 +28,7 @@
 		};
 
 		return map[constant];
-	};
+	};*/
 
 	VIZ.events = (function(){
 		function init(){
