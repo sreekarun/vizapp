@@ -1,8 +1,31 @@
+// Todo - move to separate file after consulting with sree
+// Utility function
+(function(window, namespace, undefined){
+    window[namespace] = window[namespace] || {};
+    window[namespace].constants = function (argument) {
+        this.map = this.map || {};
+        if(typeof argument==="object") {
+            $.extend(this.map,argument);
+        }
+
+        return this.map[argument];
+    }
+    window.namespace = window[namespace];
+})(window, "VIZ");
+
+// 
 (function(window, $, d3, undefined){
 	//Namespace
-	var VIZ = {};
+	var VIZ = window.VIZ || {},
+        constants = {
+            url: 'data/nations.json',
+            xlabel: "income per capita, inflation-adjusted (dollars)",
+            ylabel: "life expectancy (years)"
+        };
+    VIZ.constants(constants);
 
-	VIZ.constants = function(constant){
+    // Todo - Delete after creating separate utility js file
+	/*VIZ.constants = function(constant){
 		var map = {
 			url: 'data/nations.json',
             xlabel: "income per capita, inflation-adjusted (dollars)",
@@ -10,7 +33,7 @@
 		};
 
 		return map[constant];
-	};
+	};*/
 
 	VIZ.events = (function(){
 		function init(){
@@ -56,29 +79,29 @@
 	// Chart view
 	VIZ.ChartView = function(nations){
         // Chart dimensions.
-        var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
-            width = 960 - margin.right,
-            height = 500 - margin.top - margin.bottom;
+        var margin  = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
+            width   = 960 - margin.right,
+            height  = 500 - margin.top - margin.bottom,
 
             // Various accessors that specify the four dimensions of data to visualize.
-            function x(d) { return d.income; }
-            function y(d) { return d.lifeExpectancy; }
-            function radius(d) { return d.population; }
-            function color(d) { return d.region; }
-            function key(d) { return d.name; }
+            x       = function(d) { return d.income; },
+            y       = function(d) { return d.lifeExpectancy; },
+            radius  = function(d) { return d.population; },
+            color   = function(d) { return d.region; },
+            key     = function(d) { return d.name; },
 
 
-		// Various scales. These domains make assumptions of data, naturally.
-        var xScale = d3.scale.log().domain([300, 1e5]).range([0, width]),
-            yScale = d3.scale.linear().domain([10, 85]).range([height, 0]),
+    		// Various scales. These domains make assumptions of data, naturally.
+            xScale      = d3.scale.log().domain([300, 1e5]).range([0, width]),
+            yScale      = d3.scale.linear().domain([10, 85]).range([height, 0]),
             radiusScale = d3.scale.sqrt().domain([0, 5e8]).range([0, 40]),
-            colorScale = d3.scale.category10();
+            colorScale  = d3.scale.category10(),
 
-        var xAxis = d3.svg.axis().orient("bottom").scale(xScale).ticks(12, d3.format(",d")),
-            yAxis = d3.svg.axis().scale(yScale).orient("left");
+            xAxis       = d3.svg.axis().orient("bottom").scale(xScale).ticks(12, d3.format(",d")),
+            yAxis       = d3.svg.axis().scale(yScale).orient("left");
 
         // Create the SVG container and set the origin.
-        var svg = d3.select("#chart").append("svg")
+        svg = d3.select("#chart").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -162,8 +185,19 @@
             var yearScale = d3.scale.linear()
                 .domain([1800, 2009])
                 .range([box.x + 10, box.x + box.width - 10])
-                .clamp(true);
+                .clamp(true),
 
+            mouseover = function() {
+                label.classed("active", true);
+            },
+
+            mouseout = function () {
+                label.classed("active", false);
+            },
+
+            mousemove = function () {
+                displayYear(yearScale.invert(d3.mouse(this)[0]));
+            }
             // Cancel the current transition, if any.
             svg.transition().duration(0);
 
@@ -172,18 +206,6 @@
                 .on("mouseout", mouseout)
                 .on("mousemove", mousemove)
                 .on("touchmove", mousemove);
-
-            function mouseover() {
-              label.classed("active", true);
-            }
-
-            function mouseout() {
-              label.classed("active", false);
-            }
-
-            function mousemove() {
-              displayYear(yearScale.invert(d3.mouse(this)[0]));
-            }
         }
 
         // Tweens the entire chart by first tweening the year, and then the data.
