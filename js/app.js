@@ -19,7 +19,6 @@
 		init();
 
 		return {
-
 		};
 	})();
 
@@ -33,9 +32,24 @@
 		*	returns a promise 
 		*/
 		getData: function(){
+            var that = this;
 			var url = VIZ.constants('url');
-			return $.getJSON(url);
-		}
+            var promise = $.getJSON(url);
+            promise.done(function(data){
+                that.model = data;
+            });
+			return promise;
+		},
+        interpolateData : function(){
+
+
+        },
+        tweenYear : function(){
+
+        },
+        interpolateValues : function(){
+
+        }
 	};
 
 
@@ -67,7 +81,7 @@
         var svg = d3.select("#chart").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-          .append("g")
+        .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         // Add the x-axis.
@@ -81,29 +95,22 @@
             .attr("class", "y axis")
             .call(yAxis);
 
+        
+
+
         // Add an x-axis label.
         svg.append("text")
-            .attr("class", "x label")
-            .attr("text-anchor", "end")
-            .attr("x", width)
-            .attr("y", height - 6)
+            .attr({ "class": "x label","text-anchor" : "end", "x" : width, "y" : height - 6})
             .text(VIZ.constants('xlabel'));
 
         // Add a y-axis label.
         svg.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "end")
-            .attr("y", 6)
-            .attr("dy", ".75em")
-            .attr("transform", "rotate(-90)")
+            .attr({"class":"y label","text-anchor": "end", "y": 6, "dy":".75em", "transform":"rotate(-90)"})
             .text(VIZ.constants('ylabel'));
 
         // Add the year label; the value is set on transition.
         var label = svg.append("text")
-            .attr("class", "year label")
-            .attr("text-anchor", "end")
-            .attr("y", height - 24)
-            .attr("x", width)
+            .attr({"class":"year label", "text-anchor":"end", "y": height - 24, "x": width})
             .text(1800);
         // A bisector since many nation's data is sparsely-defined.
         var bisect = d3.bisector(function(d) { return d[0]; });
@@ -127,11 +134,7 @@
         var box = label.node().getBBox();
 
         var overlay = svg.append("rect")
-            .attr("class", "overlay")
-            .attr("x", box.x)
-            .attr("y", box.y)
-            .attr("width", box.width)
-            .attr("height", box.height)
+            .attr({"class": "overlay","x": box.x, "y": box.y,"width": box.width,"height": box.height})
             .on("mouseover", enableInteraction);
 
         // Start a transition that interpolates the data based on year.
@@ -226,17 +229,8 @@
     //APP Start
     var appModel = new VIZ.Model();
 
-    var data = appModel.getData();
-
-    data.done(function(nations){
-        new VIZ.ChartView(nations);
+    appModel.getData().done(function(){
+        new VIZ.ChartView(appModel.model);
     });
-
-    data.fail(function(){
-        console.log('ajax Failed');
-    });
-
-
-
 
 })(window, jQuery, d3);
