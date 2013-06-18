@@ -18,9 +18,9 @@
     //Namespace
     var VIZ = window.VIZ || {},
         constants = {
-            url: 'data/nations.json',
-            xlabel: "income per capita, inflation-adjusted (dollars)",
-            ylabel: "life expectancy (years)"
+            url: 'data/stocks.json',
+            xlabel: "Returns in $",
+            ylabel: "Close Price in K"
         };
     VIZ.constants(constants);
 
@@ -63,6 +63,7 @@
             });
             return promise;
         },
+
         interpolateData : function(){
 
 
@@ -75,26 +76,25 @@
         }
     };
 
-
-    // Chart view
-    VIZ.ChartView = function(nations){
+    // Stock view
+    VIZ.StockView = function(stocks){
         // Chart dimensions.
         var margin  = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
             width   = 960 - margin.right,
             height  = 500 - margin.top - margin.bottom,
 
             // Various accessors that specify the four dimensions of data to visualize.
-            x       = function(d) { return d.income; },
-            y       = function(d) { return d.lifeExpectancy; },
-            radius  = function(d) { return d.population; },
-            color   = function(d) { return d.region; },
-            key     = function(d) { return d.name; },
+            x       = function(d) { return d.Returns; },
+            y       = function(d) { return d.ClosePrice; },
+            radius  = function(d) { return d.Volume; },
+            color   = function(d) { return d.Symbol; },
+            key     = function(d) { return d.Symbol; },
 
 
             // Various scales. These domains make assumptions of data, naturally.
-            xScale      = d3.scale.log().domain([300, 1e5]).range([0, width]),
-            yScale      = d3.scale.linear().domain([10, 85]).range([height, 0]),
-            radiusScale = d3.scale.sqrt().domain([0, 5e8]).range([0, 40]),
+            xScale      = d3.scale.linear().domain([-8, 8]).range([-width /2, width/2]),
+            yScale      = d3.scale.linear().domain([0, 400]).range([height,0]),
+            radiusScale = d3.scale.sqrt().domain([0, 5e7]).range([0, 40]),
             colorScale  = d3.scale.category10(),
 
             xAxis       = d3.svg.axis().orient("bottom").scale(xScale).ticks(12, d3.format(",d")),
@@ -105,7 +105,7 @@
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
         .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .attr("transform", "translate(" + (width/2 + 10)  + "," + margin.top + ")");
 
         // Add the x-axis.
         svg.append("g")
@@ -119,11 +119,9 @@
             .call(yAxis);
 
         
-
-
         // Add an x-axis label.
         svg.append("text")
-            .attr({ "class": "x label","text-anchor" : "end", "x" : width, "y" : height - 6})
+            .attr({ "class": "x label","text-anchor" : "end", "x" : width / 2, "y" : height - 6})
             .text(VIZ.constants('xlabel'));
 
         // Add a y-axis label.
@@ -131,10 +129,13 @@
             .attr({"class":"y label","text-anchor": "end", "y": 6, "dy":".75em", "transform":"rotate(-90)"})
             .text(VIZ.constants('ylabel'));
 
+        
+
         // Add the year label; the value is set on transition.
         var label = svg.append("text")
-            .attr({"class":"year label", "text-anchor":"end", "y": height - 24, "x": width})
-            .text(1800);
+            .attr({"class":"year label", "text-anchor":"end", "y": height - 24, "x": width/2})
+            .text('01/01/2013');
+
         // A bisector since many nation's data is sparsely-defined.
         var bisect = d3.bisector(function(d) { return d[0]; });
 
@@ -142,7 +143,7 @@
         var dot = svg.append("g")
                         .attr("class", "dots")
                         .selectAll(".dot")
-                        .data(interpolateData(1800))
+                        .data(interpolateData(20130124))
                         .enter().append("circle")
                         .attr("class", "dot")
                         .style("fill", function(d) { return colorScale(color(d)); })
@@ -151,8 +152,9 @@
 
         // Add a title.
         dot.append("title")
-            .text(function(d) { return d.name; });
+            .text(function(d) { return d.Symbol; });
 
+    
         // Add an overlay for the year label.
         var box = label.node().getBBox();
 
@@ -160,6 +162,7 @@
             .attr({"class": "overlay","x": box.x, "y": box.y,"width": box.width,"height": box.height})
             .on("mouseover", enableInteraction);
 
+        return;
         // Start a transition that interpolates the data based on year.
         svg.transition()
             .duration(30000)
@@ -169,9 +172,17 @@
 
         // Positions the dots based on data.
         function position(dot) {
-            dot.attr("cx", function(d) { return xScale(x(d)); })
-               .attr("cy", function(d) { return yScale(y(d)); })
-               .attr("r", function(d) { return radiusScale(radius(d)); 
+            dot.attr("cx", function(d) {
+                    // console.log('xScale(x(d))', xScale(x(d)));
+                    return xScale(x(d)); })
+               .attr("cy", function(d) {
+                    // console.log(' yScale(y(d))',  y(d));
+                    return yScale(y(d)); })
+                    // return 100;})
+    
+               .attr("r", function(d) {
+                    // console.log('radiusScale(radius(d))', radiusScale(radius(d)));
+                    return radiusScale(radius(d));
             });
         }
 
@@ -182,8 +193,10 @@
 
         // After the transition finishes, you can mouseover to change the year.
         function enableInteraction() {
-            var yearScale = d3.scale.linear()
-                .domain([1800, 2009])
+            
+
+            var yearScale = d3.time.scale()
+                .domain([moment("20130430","YYYYMMDD").format("YYYY-MM-DD"), moment("20130502","YYYYMMDD").format("YYYY-MM-DD")])
                 .range([box.x + 10, box.x + box.width - 10])
                 .clamp(true),
 
@@ -196,8 +209,9 @@
             },
 
             mousemove = function () {
+                console.log(d3.mouse(this)[0]);
                 displayYear(yearScale.invert(d3.mouse(this)[0]));
-            }
+            };
             // Cancel the current transition, if any.
             svg.transition().duration(0);
 
@@ -211,25 +225,29 @@
         // Tweens the entire chart by first tweening the year, and then the data.
         // For the interpolated data, the dots and label are redrawn.
         function tweenYear() {
-            var year = d3.interpolateNumber(1800, 2009);
+            //var year = d3.interpolateNumber(20130430, 20130502);
+            var year = d3.interpolate(20130430, 20130502);
+            
+
             return function(t) { displayYear(year(t)); };
         }
 
         // Updates the display to show the specified year.
-        function displayYear(year) {
+          function displayYear(year) {
             dot.data(interpolateData(year), key).call(position).sort(order);
             label.text(Math.round(year));
-        }
+          }
+
 
         // Interpolates the dataset for the given (fractional) year.
         function interpolateData(year) {
-            return nations.map(function(d) {
+            return stocks.map(function(d) {
                 return {
-                    name: d.name,
-                    region: d.region,
-                    income: interpolateValues(d.income, year),
-                    population: interpolateValues(d.population, year),
-                    lifeExpectancy: interpolateValues(d.lifeExpectancy, year)
+                    Symbol: d.Symbol,
+                    Color: d.Symbol,
+                    Returns: interpolateValues(d.Returns, year),
+                    Volume: interpolateValues(d.Volume, year),
+                    ClosePrice: interpolateValues(d.ClosePrice, year)
                 };
             });
         }
@@ -248,11 +266,16 @@
 
     };
 
+   
+
     //APP Start
     var appModel = new VIZ.Model();
 
     appModel.getData().done(function(){
-        new VIZ.ChartView(appModel.model);
+        console.log(appModel.model);
+        new VIZ.StockView(appModel.model);
+    }).fail(function(){
+        console.log('error fetching data');
     });
 
 })(window, jQuery, d3);

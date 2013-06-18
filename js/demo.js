@@ -81,6 +81,8 @@ d3.json("data/nations.json", function(nations) {
       .call(position)
       .sort(order);
 
+
+console.log(interpolateData(1800));
   // Add a title.
   dot.append("title")
       .text(function(d) { return d.name; });
