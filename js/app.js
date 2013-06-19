@@ -19,7 +19,7 @@
     var VIZ = window.VIZ || {},
         constants = {
             url: 'data/stocks.json',
-            xlabel: "Returns in $",
+            xlabel: "Returns",
             ylabel: "Close Price in K"
         };
     VIZ.constants(constants);
