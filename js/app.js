@@ -152,7 +152,7 @@
 
         // Add a title.
         dot.append("title")
-            .text(function(d) { return d.Symbol; });
+            .text(function(d) { return d.Symbol + ' Volume:' + d.Volume.toExponential(); });
 
     
         // Add an overlay for the year label.
