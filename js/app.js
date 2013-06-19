@@ -159,8 +159,8 @@
         var box = label.node().getBBox();
 
         var overlay = svg.append("rect")
-            .attr({"class": "overlay","x": box.x, "y": box.y,"width": box.width,"height": box.height})
-            .on("mouseover", enableInteraction);
+            .attr({"class": "overlay","x": box.x, "y": box.y,"width": box.width,"height": box.height});
+            // .on("mouseover", enableInteraction);
         
         console.log(moment('20130124','YYYYMMDD').unix());
         
@@ -168,8 +168,8 @@
         svg.transition()
             .duration(200000)
             .ease("linear")
-            .tween("year", tweenYear)
-            .each("end", enableInteraction);
+            .tween("year", tweenYear);
+            //.each("end", enableInteraction);
 
         // Positions the dots based on data.
         function position(dot) {
