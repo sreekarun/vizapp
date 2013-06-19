@@ -92,7 +92,7 @@
 
 
             // Various scales. These domains make assumptions of data, naturally.
-            xScale      = d3.scale.linear().domain([-8, 8]).range([-width /2, width/2]),
+            xScale      = d3.scale.linear().domain([-15, 15]).range([-width /2, width/2]),
             yScale      = d3.scale.linear().domain([0, 800]).range([height,0]),
             radiusScale = d3.scale.sqrt().domain([0, 5e7]).range([0, 40]),
             colorScale  = d3.scale.category10(),
