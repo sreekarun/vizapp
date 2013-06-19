@@ -93,7 +93,7 @@
 
             // Various scales. These domains make assumptions of data, naturally.
             xScale      = d3.scale.linear().domain([-8, 8]).range([-width /2, width/2]),
-            yScale      = d3.scale.linear().domain([0, 400]).range([height,0]),
+            yScale      = d3.scale.linear().domain([0, 600]).range([height,0]),
             radiusScale = d3.scale.sqrt().domain([0, 5e7]).range([0, 40]),
             colorScale  = d3.scale.category10(),
 
@@ -161,11 +161,12 @@
         var overlay = svg.append("rect")
             .attr({"class": "overlay","x": box.x, "y": box.y,"width": box.width,"height": box.height})
             .on("mouseover", enableInteraction);
-
-        return;
+        
+        console.log(moment('20130124','YYYYMMDD').unix());
+        
         // Start a transition that interpolates the data based on year.
         svg.transition()
-            .duration(30000)
+            .duration(200000)
             .ease("linear")
             .tween("year", tweenYear)
             .each("end", enableInteraction);
@@ -226,14 +227,19 @@
         // For the interpolated data, the dots and label are redrawn.
         function tweenYear() {
             //var year = d3.interpolateNumber(20130430, 20130502);
-            var year = d3.interpolate(20130430, 20130502);
+            var year = d3.interpolateNumber(1356998400,1370995200);
             
-
-            return function(t) { displayYear(year(t)); };
+            return function(t) {
+                
+                var yearFormatted = moment.unix(year(t)).format('YYYYMMDD');
+                
+                displayYear(yearFormatted);
+            };
         }
 
         // Updates the display to show the specified year.
           function displayYear(year) {
+            console.log(year);
             dot.data(interpolateData(year), key).call(position).sort(order);
             label.text(Math.round(year));
           }
