@@ -162,9 +162,7 @@
             .attr({"class": "overlay","x": box.x, "y": box.y,"width": box.width,"height": box.height});
             // .on("mouseover", enableInteraction);
         
-        console.log(moment('20130124','YYYYMMDD').unix());
-        
-        // Start a transition that interpolates the data based on year.
+            // Start a transition that interpolates the data based on year.
         svg.transition()
             .duration(200000)
             .ease("linear")
@@ -210,7 +208,6 @@
             },
 
             mousemove = function () {
-                console.log(d3.mouse(this)[0]);
                 displayYear(yearScale.invert(d3.mouse(this)[0]));
             };
             // Cancel the current transition, if any.
@@ -239,7 +236,6 @@
 
         // Updates the display to show the specified year.
           function displayYear(year) {
-            console.log(year);
             dot.data(interpolateData(year), key).call(position).sort(order);
             label.text(Math.round(year));
           }
@@ -278,7 +274,6 @@
     var appModel = new VIZ.Model();
 
     appModel.getData().done(function(){
-        console.log(appModel.model);
         new VIZ.StockView(appModel.model);
     }).fail(function(){
         console.log('error fetching data');
