@@ -159,15 +159,15 @@
         var box = label.node().getBBox();
 
         var overlay = svg.append("rect")
-            .attr({"class": "overlay","x": box.x, "y": box.y,"width": box.width,"height": box.height});
-            // .on("mouseover", enableInteraction);
+            .attr({"class": "overlay","x": box.x, "y": box.y,"width": box.width,"height": box.height})
+            .on("mouseover", enableInteraction);
         
             // Start a transition that interpolates the data based on year.
         svg.transition()
             .duration(200000)
             .ease("linear")
-            .tween("year", tweenYear);
-            //.each("end", enableInteraction);
+            .tween("year", tweenYear)
+            .each("end", enableInteraction);
 
         // Positions the dots based on data.
         function position(dot) {
@@ -194,8 +194,8 @@
         function enableInteraction() {
             
 
-            var yearScale = d3.time.scale()
-                .domain([moment("20130430","YYYYMMDD").format("YYYY-MM-DD"), moment("20130502","YYYYMMDD").format("YYYY-MM-DD")])
+            var yearScale = d3.scale.linear()
+                .domain([1356998400,1370995200])
                 .range([box.x + 10, box.x + box.width - 10])
                 .clamp(true),
 
@@ -208,7 +208,8 @@
             },
 
             mousemove = function () {
-                displayYear(yearScale.invert(d3.mouse(this)[0]));
+                var yearFormatted = moment.unix(yearScale.invert(d3.mouse(this)[0])).format('YYYYMMDD');
+                displayYear(yearFormatted);
             };
             // Cancel the current transition, if any.
             svg.transition().duration(0);
