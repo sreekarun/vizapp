@@ -20,7 +20,7 @@
         constants = {
             url: 'data/stocks.json',
             xlabel: "Returns",
-            ylabel: "Close Price in K"
+            ylabel: "Close Price in $"
         };
     VIZ.constants(constants);
 
@@ -73,15 +73,33 @@
         },
         interpolateValues : function(){
 
+        },
+        getChartData: function(Symbol){
+            var arr =[];
+            var data = this.model;
+            var curIndex;
+            $.each(data,function(index,value){
+                if( value['Symbol'] === Symbol ){
+                    curIndex = index;
+                    return false;
+                }
+            });
+            arr = data[curIndex].Returns;
+            arr = arr.map(function(value){
+                var formattedDate = moment(value[0].toString(), 'YYYYMMDD').unix();
+                return [formattedDate * 1000, value[1]];
+            });
+            console.log(arr);
+            return arr;
         }
     };
 
     // Stock view
     VIZ.StockView = function(stocks){
         // Chart dimensions.
-        var margin  = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
+        var margin  = {top: 5, right: 5, bottom: 40, left: 5},
             width   = 960 - margin.right,
-            height  = 500 - margin.top - margin.bottom,
+            height  = 600 - margin.top - margin.bottom,
 
             // Various accessors that specify the four dimensions of data to visualize.
             x       = function(d) { return d.Returns; },
@@ -148,7 +166,39 @@
                         .attr("class", "dot")
                         .style("fill", function(d) { return colorScale(color(d)); })
                         .call(position)
+                        .on('click', openZoomView)
                         .sort(order);
+
+
+        function openZoomView(d){
+
+
+            $('<div id='+ d.Symbol +'>').highcharts('StockChart', {
+                
+
+                rangeSelector : {
+                    selected : 1
+                },
+
+                title : {
+                    text : d.Symbol + ' Stock Price'
+                },
+
+                series : [{
+                    name : d.Symbol,
+                    data : appModel.getChartData(d.Symbol),
+                    tooltip: {
+                        valueDecimals: 2
+                    }
+                }],
+                chart: {
+                    width: 940
+                }
+            }).dialog({
+                width: 960,
+                height: 500
+            });
+        }
 
         // Add a title.
         dot.append("title")
@@ -208,8 +258,14 @@
             },
 
             mousemove = function () {
-                var yearFormatted = moment.unix(yearScale.invert(d3.mouse(this)[0])).format('YYYYMMDD');
-                displayYear(yearFormatted);
+                if(label.classed('active')){
+                    var yearFormatted = moment.unix(yearScale.invert(d3.mouse(this)[0])).format('YYYYMMDD');
+                    displayYear(yearFormatted);    
+                }
+                
+            },
+            click = function(){
+                label.classed("active",false);
             };
             // Cancel the current transition, if any.
             svg.transition().duration(0);
@@ -218,7 +274,8 @@
                 .on("mouseover", mouseover)
                 .on("mouseout", mouseout)
                 .on("mousemove", mousemove)
-                .on("touchmove", mousemove);
+                .on("touchmove", mousemove)
+                .on("click",click);
         }
 
         // Tweens the entire chart by first tweening the year, and then the data.
@@ -276,8 +333,12 @@
 
     appModel.getData().done(function(){
         new VIZ.StockView(appModel.model);
+
     }).fail(function(){
         console.log('error fetching data');
     });
+
+
+
 
 })(window, jQuery, d3);

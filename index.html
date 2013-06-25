@@ -3,26 +3,26 @@
 <head>
     <meta charset="utf-8">
     <title>Portfolio Performance</title>
+    <link type="text/css" rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
     <link type="text/css" rel="stylesheet" href="css/style.css"/>
     <link type="text/css" rel="stylesheet" href="css/demo.css"/>
 </head>
 <body>
     <header>
-        <aside>Demo</aside>
         <a href="#">Visualization Practice</a>
     </header>
 
     <h1>Portfolio Performance</h1>
 
-    <p id="chart"></p>
+    <div id="chart"></div>
 
-    <aside>Mouseover the year to move forward and backwards through time.</aside>
+    <aside class="info">Mouseover the year to move forward and backwards through time. Click to freeze the date</aside>
+    
     <script src="js/jquery.js"></script>
     <script src="js/moment.js"></script>
     <script src="js/d3.v2.js"></script>
-    <script src="js/vendor/jquery-ui-1.10.3/jquery-1.9.1.js"></script>
-    <script src="js/vendor/hs/jquery-1.9.1.js/highstock.js"></script>
-
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="js/vendor/hs/highstock.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

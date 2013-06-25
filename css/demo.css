@@ -9,6 +9,7 @@ text {
 
 .dot {
   stroke: #000;
+  cursor: pointer;
 }
 
 .axis path, .axis line {
@@ -34,4 +35,9 @@ text {
   fill: none;
   pointer-events: all;
   cursor: ew-resize;
+}
+
+.info{
+  right: -165px;
+  bottom: -40px;
 }
