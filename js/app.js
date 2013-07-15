@@ -170,6 +170,33 @@
                         .sort(order);
 
 
+        var legend = svg.append("g")
+                        .attr("class", "legend")
+                        .selectAll(".legend")
+                        .data(interpolateData(20130124))
+                        .enter()
+                            .append("rect")
+                            .attr("class", "rect")
+                            .attr("x", 400)
+                            .attr("y", function(d,i){ return i * 16})
+                            .attr("width", 15)
+                            .attr("height", 15)
+                            .style("fill", function(d) { return colorScale(color(d)); });
+
+        var legendLabel  = svg.append("g")
+                        .attr("class", "l-label")
+                        .selectAll(".l-label")
+                        .data(interpolateData(20130124))
+                        .enter()
+                            .append("text")
+                            .attr("class", "label")
+                            .attr("x", 420)
+                            .attr("y", function(d,i){ return ((i * 16) + 10  )})
+                            .attr("width", 15)
+                            .attr("height", 15)
+                            .text(function(d) { return d.Symbol });
+
+
         function openZoomView(d){
 
 
